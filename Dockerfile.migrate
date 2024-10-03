@@ -1,0 +1,19 @@
+FROM node:lts
+
+RUN apt-get update && apt-get -y upgrade
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+ARG DATABASE_URL
+
+ADD package.json yarn.lock /usr/src/app/
+RUN yarn
+
+ADD . /usr/src/app
+COPY ./prisma ./prisma/
+
+RUN chown -R node:node /usr/src/app
+
+USER node
+CMD ["yarn", "db:migrate:prod"]

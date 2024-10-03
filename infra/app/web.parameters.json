@@ -1,0 +1,54 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "name": {
+      "value": "${SERVICE_WEB_NAME}"
+    },
+    "imageName": {
+      "value": "${SERVICE_WEB_IMAGE_NAME}"
+    },
+    "applicationInsightsName": {
+      "value": "${APPLICATIONINSIGHTS_NAME}"
+    },
+    "containerAppsEnvironmentName": {
+      "value": "${AZURE_CONTAINER_ENVIRONMENT_NAME}"
+    },
+    "containerRegistryName": {
+      "value": "${AZURE_CONTAINER_REGISTRY_NAME}"
+    },
+    "keyVaultName": {
+      "value": "${AZURE_KEY_VAULT_NAME}"
+    },
+    "authUrl": {
+      "value": "${NEXTAUTH_URL}"
+    },
+    "nextAuthSecret": {
+      "value": "${NEXTAUTH_SECRET}"
+    },
+    "azureAdClientId": {
+      "value": "${AZURE_AD_CLIENT_ID}"
+    },
+    "azureAdClientSecret": {
+      "value": "${AZURE_AD_CLIENT_SECRET}"
+    },
+    "azureAdTenantId": {
+      "value": "${AZURE_AD_TENANT_ID}"
+    },
+    "openAiApiKey": {
+      "value": "${OPENAI_API_KEY}"
+    },
+    "openAiBasePath": {
+      "value": "${OPENAI_BASE_PATH}"
+    },
+    "openAiModel": {
+      "value": "${OPENAI_MODEL}"
+    },
+    "databaseUrl": {
+      "value": "${DATABASE_URL}"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: npx-fullstack-template
+metadata:
+  template: npx-fullstack-template@0.0.1-beta
+services:
+  web:
+    project: ./
+    module: app/web
+    language: ts
+    host: containerapp
+  migrate:
+    project: ./
+    module: app/migrate
+    language: ts
+    host: containerapp
+    docker: 
+      path: './Dockerfile.migrate'
+infra:
+  provider: bicep
+
