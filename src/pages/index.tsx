@@ -1,21 +1,20 @@
 import { type NextPage } from 'next';
 import Head from 'next/head';
-import { useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { api } from '~/utils/api';
 
-// Import new components (to be created)
 import Responsibilities from '~/components/Responsibilities';
-// import Trainings from '~/components/Trainings';
-// import Software from '~/components/Software';
-// import Governance from '~/components/Governance';
-// import JobAids from '~/components/JobAids';
-// import CurrentRole from '~/components/CurrentRole';
-import AdminPanel from '~/components/AdminPanel';
+import { Button } from '~/components/ui/button';
+import Training from '~/components/Training';
+import SoftwareHardware from '~/components/SoftwareHardware';
+import GovernanceProcedures from '~/components/GovernanceProcedures';
+import JobAids from '~/components/JobAids';
+import Profile from '~/components/Profile';
 
 const Home: NextPage = () => {
   const { data: sessionData } = useSession();
-  const isManager = api.user.isManager.useQuery().data;
+  // const isManager = api.user.isManager.useQuery().data;
 
   return (
     <>
@@ -32,31 +31,44 @@ const Home: NextPage = () => {
       </Head>
       <main className="container mx-auto px-4">
         <h1 className="mb-6 text-4xl font-bold">Employee Dashboard</h1>
-        <Tabs defaultValue="responsibilities">
+        <AuthShowcase />
+        <Tabs defaultValue="profile">
           <TabsList>
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="training">Training</TabsTrigger>
+            <TabsTrigger value="software-hardware">
+              Software/Hardware
+            </TabsTrigger>
             <TabsTrigger value="responsibilities">Responsibilities</TabsTrigger>
-            <TabsTrigger value="trainings">Trainings</TabsTrigger>
-            <TabsTrigger value="software">Required Software</TabsTrigger>
-            <TabsTrigger value="governance">
+            <TabsTrigger value="job-aids">Job Aids</TabsTrigger>
+            <TabsTrigger value="governance-procedures">
               Governance & Procedures
             </TabsTrigger>
-            <TabsTrigger value="jobaids">Job Aids</TabsTrigger>
-            <TabsTrigger value="currentrole">Current Role</TabsTrigger>
-            {isManager && <TabsTrigger value="admin">Admin</TabsTrigger>}
+            <TabsTrigger
+              disabled
+              value="tbd"
+            >
+              ETC...
+            </TabsTrigger>
           </TabsList>
+          <TabsContent value="profile">
+            <Profile />
+          </TabsContent>
           <TabsContent value="responsibilities">
             <Responsibilities />
           </TabsContent>
-          <TabsContent value="trainings">{/* <Trainings /> */}</TabsContent>
-          <TabsContent value="software">{/* <Software /> */}</TabsContent>
-          <TabsContent value="governance">{/* <Governance /> */}</TabsContent>
-          <TabsContent value="jobaids">{/* <JobAids /> */}</TabsContent>
-          <TabsContent value="currentrole">{/* <CurrentRole /> */}</TabsContent>
-          {isManager && (
-            <TabsContent value="admin">
-              <AdminPanel />
-            </TabsContent>
-          )}
+          <TabsContent value="training">
+            <Training />
+          </TabsContent>
+          <TabsContent value="software-hardware">
+            <SoftwareHardware />
+          </TabsContent>
+          <TabsContent value="governance-procedures">
+            <GovernanceProcedures />
+          </TabsContent>
+          <TabsContent value="job-aids">
+            <JobAids />
+          </TabsContent>
         </Tabs>
       </main>
     </>
@@ -64,3 +76,25 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+function AuthShowcase() {
+  const { data: sessionData } = useSession();
+  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
+    undefined,
+    { enabled: sessionData?.user !== undefined }
+  );
+
+  return (
+    <div className="space-y-4">
+      <p>
+        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
+        {secretMessage && <span> - {secretMessage}</span>}
+      </p>
+      <Button
+        onClick={sessionData ? () => void signOut() : () => void signIn()}
+      >
+        {sessionData ? 'Sign out' : 'Sign in'}
+      </Button>
+    </div>
+  );
+}
