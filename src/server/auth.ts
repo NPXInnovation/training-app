@@ -4,10 +4,11 @@ import {
   type NextAuthOptions,
   type DefaultSession,
 } from 'next-auth';
-import AzureADProvider from 'next-auth/providers/azure-ad';
+import AzureADProvider, { AzureADProfile } from 'next-auth/providers/azure-ad';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { env } from '~/env.mjs';
 import { prisma } from '~/server/db';
+import { DefaultJWT, JWT } from 'next-auth/jwt';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -19,15 +20,31 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      isOnboardingComplete: boolean;
+      phone: string;
+      department: string;
+      role: string;
+      startDate: Date | undefined;
       // ...other properties
       // role: UserRole;
     } & DefaultSession['user'];
   }
 
+  // interface Profile extends AzureADProfile {
+  //   roles: string[];
+  // }
   // interface User {
+  //   isOnboardingComplete: boolean;
   //   // ...other properties
   //   // role: UserRole;
   // }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT extends DefaultJWT {
+    userId: string;
+    isOnboardingComplete: boolean;
+  }
 }
 
 /**
@@ -36,13 +53,88 @@ declare module 'next-auth' {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: 'jwt',
+  },
   callbacks: {
-    session({ session, user }) {
+    async jwt({ token, profile, user }) {
+      console.log('jwt', token, profile, user);
+      const currentUser = await prisma.user.findUnique({
+        where: { email: token.email || '' },
+      });
+      token.isOnboardingComplete = currentUser?.isOnboardingComplete || false;
+
+      if (user) {
+        //Connect the user table to the employee by setting the userId on the employee
+        const employee = await prisma.employee.update({
+          where: { email: user.email || '' },
+          data: { userId: user.id },
+        });
+
+        token.userId = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
       if (session.user) {
-        session.user.id = user.id;
+        //Get employee info from the database
+        const employee = await prisma.employee.findUnique({
+          where: { email: session.user.email || '' },
+          include: {
+            department: true,
+            roles: {
+              include: {
+                role: true,
+              },
+            },
+          },
+        });
+        console.log('employee', employee);
+
+        session.user.id = token.userId;
+        session.user.isOnboardingComplete = token.isOnboardingComplete;
+        session.user.name = token.name;
+        session.user.email = token.email;
+        session.user.phone = employee?.phone || '';
+        session.user.department = employee?.department?.name || '';
+        session.user.role = employee?.roles[0]?.role.roleName || '';
+        session.user.startDate = employee?.roles[0]?.startDate || undefined;
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
+    },
+    async signIn({ user }) {
+      console.log('signIn', user);
+      // Check if an employee record exists for this user
+      const employee = await prisma.employee.findUnique({
+        where: { email: user.email || '' },
+        include: { roles: true },
+      });
+
+      // if (employee) {
+      //   // Check if the employee has any roles to determine if they have completed onboarding
+      //   if (employee.roles.length === 0) {
+      //     console.log('employee exists but has no roles');
+      //     return '/onboarding';
+      //   }
+      //   return true; // Employee exists and has roles
+      // }
+
+      // If no employee record exists, create one
+      if (!employee) {
+        console.log('employee does not exist');
+        await prisma.employee.create({
+          data: {
+            firstName: user.name?.split(' ')[0] || '',
+            lastName: user.name?.split(' ')[1] || '',
+            email: user.email || '',
+            phone: '',
+            isActive: true,
+          },
+        });
+      }
+
+      return true;
     },
   },
   adapter: PrismaAdapter(prisma),

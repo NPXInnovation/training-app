@@ -1,10 +1,13 @@
 import React from 'react';
 import { Card, CardContent, CardHeader } from '~/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '~/components/ui/avatar';
+import { useSession } from 'next-auth/react';
 
 type Props = {};
 
 const Profile = (props: Props) => {
+  const { data: sessionData } = useSession();
+
   return (
     <div className="grid gap-6 duration-500 animate-in fade-in">
       <Card>
@@ -14,12 +17,12 @@ const Profile = (props: Props) => {
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
           <div className="ml-4 space-y-1">
-            <div className="text-xl font-bold">John Doe</div>
+            <div className="text-xl font-bold">{sessionData?.user.name}</div>
             <div className="text-sm text-muted-foreground">
-              Software Engineer
+              {sessionData?.user.role}
             </div>
             <div className="text-sm text-muted-foreground">
-              Engineering Department
+              {sessionData?.user.department}
             </div>
           </div>
         </CardHeader>
@@ -29,13 +32,13 @@ const Profile = (props: Props) => {
               <div className="text-sm font-medium text-muted-foreground">
                 Email
               </div>
-              <div>john.doe@company.com</div>
+              <div>{sessionData?.user.email}</div>
             </div>
             <div>
               <div className="text-sm font-medium text-muted-foreground">
                 Phone
               </div>
-              <div>+1 (555) 555-5555</div>
+              <div>{sessionData?.user.phone}</div>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -43,7 +46,11 @@ const Profile = (props: Props) => {
               <div className="text-sm font-medium text-muted-foreground">
                 Start Date
               </div>
-              <div>June 1, 2020</div>
+              <div>
+                {sessionData?.user?.startDate
+                  ? new Date(sessionData?.user?.startDate).toLocaleDateString()
+                  : 'No start date data'}
+              </div>
             </div>
             <div>
               <div className="text-sm font-medium text-muted-foreground">

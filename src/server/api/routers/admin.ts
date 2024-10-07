@@ -1,7 +1,13 @@
 import { z } from 'zod';
-import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from '~/server/api/trpc';
 import { TRPCError } from '@trpc/server';
 
+//TODO: These routes were just boiler plate and need to be fixed
+//TODO: Add more endpoints for getting all properties of a user such as trainings, responsibilities, etc.
 export const adminRouter = createTRPCRouter({
   getEmployees: protectedProcedure.query(async ({ ctx }) => {
     const currentUser = await ctx.prisma.user.findUnique({
@@ -81,5 +87,23 @@ export const adminRouter = createTRPCRouter({
       }
 
       return { success: true };
+    }),
+  getDepartments: publicProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.department.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true },
+    });
+  }),
+
+  getRoles: publicProcedure
+    .input(z.object({ departmentId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.role.findMany({
+        where: {
+          departmentId: parseInt(input.departmentId),
+          isActive: true,
+        },
+        select: { id: true, roleName: true },
+      });
     }),
 });
