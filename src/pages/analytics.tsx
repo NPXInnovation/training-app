@@ -13,15 +13,15 @@ import GovernanceProcedures from '~/components/GovernanceProcedures';
 import JobAids from '~/components/JobAids';
 import Profile from '~/components/Profile';
 
-const Home: NextPage = () => {
+const Analytics: NextPage = () => {
   const { data: sessionData } = useSession();
   // const isManager = api.user.isManager.useQuery().data;
 
   return (
-    <div className="flex items-center justify-center">
-      {/* <CollapsibleNavbar /> */}
+    <div className="flex justify-between">
+      <CollapsibleNavbar />
       <Head>
-        <title>eXpert Training App</title>
+        <title>Employee Dashboard</title>
         <meta
           name="description"
           content="Employee information and resources"
@@ -31,57 +31,27 @@ const Home: NextPage = () => {
           href="/favicon.ico"
         />
       </Head>
-      <main className="container mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8">
-        <h1 className="p-4 text-4xl font-bold">eXpert</h1>
-        {/* <AuthShowcase /> */}
-        <Tabs
-          defaultValue="profile"
-          className="w-full"
-        >
-          <TabsList className="w-full justify-start">
-            {/* <TabsTrigger
-              value="profile"
-              className="flex-1"
-            >
-              Profile
-            </TabsTrigger> */}
-            <TabsTrigger
-              value="training"
-              className="flex-1"
-            >
-              Training
-            </TabsTrigger>
-            <TabsTrigger
-              value="software-hardware"
-              className="flex-1"
-            >
+      <main className="container mx-auto px-4">
+        <h1 className="mb-6 text-4xl font-bold">Employee Dashboard</h1>
+        <AuthShowcase />
+        <Tabs defaultValue="profile">
+          <TabsList>
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="training">Training</TabsTrigger>
+            <TabsTrigger value="software-hardware">
               Software/Hardware
             </TabsTrigger>
-            <TabsTrigger
-              value="responsibilities"
-              className="flex-1"
-            >
-              Responsibilities
-            </TabsTrigger>
-            <TabsTrigger
-              value="job-aids"
-              className="flex-1"
-            >
-              Job Aids
-            </TabsTrigger>
-            <TabsTrigger
-              value="governance-procedures"
-              className="flex-1"
-            >
+            <TabsTrigger value="responsibilities">Responsibilities</TabsTrigger>
+            <TabsTrigger value="job-aids">Job Aids</TabsTrigger>
+            <TabsTrigger value="governance-procedures">
               Governance & Procedures
             </TabsTrigger>
-            {/* <TabsTrigger
+            <TabsTrigger
               disabled
               value="tbd"
-              className="flex-1"
             >
-              more coming soon!
-            </TabsTrigger> */}
+              etc...
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="profile">
             <Profile />
@@ -107,7 +77,7 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Analytics;
 
 function AuthShowcase() {
   const { data: sessionData } = useSession();

@@ -30,6 +30,8 @@ const Training = (props: Props) => {
                 management system and enroll in the "Introduction to Software
                 Engineering" course. If you have any questions, reach out to
                 your manager or the training coordinator.
+              </div>
+              <div>
                 <Link
                   href="#"
                   className="ml-2 inline-flex items-center gap-1 text-primary hover:underline"

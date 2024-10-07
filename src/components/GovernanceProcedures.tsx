@@ -1,53 +1,108 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
+import React, { ReactElement } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '~/components/ui/card';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '~/components/ui/accordion';
+import InlineLinkCopy from '~/components/ui/inline-link-copy';
+
 type Props = {};
 
+const CategoryItem = ({
+  category,
+  value,
+}: {
+  category: string;
+  value: string | ReactElement;
+}) => (
+  <div className="py-1">
+    <span className="font-bold">{category}</span>
+    <span className="ml-1">{value}</span>
+  </div>
+);
+
 const GovernanceProcedures = (props: Props) => {
+  const mockProcedures = [
+    {
+      docNumber: 'NPX-PROG-0005',
+      title: 'PRODUCT MANAGEMENT AND DEVELOPMENT',
+      originator: 'Nuclear Promise X',
+      revision: 'R00',
+      description:
+        'This Product Development Program describes the agile work methodology and how to ensure that innovation products not only meet customer expectations but exceed their expectations. Clear and effective processes and quality controls have been implemented to strive for success in the way our products are developed, tested and delivered. This program document explains the lifecycle of product development from the opportunity / tendering phase through to planning, development, testing, close-out, and continuous improvement.',
+      link: 'https://google.ca',
+    },
+    {
+      docNumber: 'NPX-PROG-0005',
+      title: 'PRODUCT MANAGEMENT AND DEVELOPMENT',
+      originator: 'Nuclear Promise X',
+      revision: 'R00',
+      description:
+        'This Product Development Program describes the agile work methodology and how to ensure that innovation products not only meet customer expectations but exceed their expectations. Clear and effective processes and quality controls have been implemented to strive for success in the way our products are developed, tested and delivered. This program document explains the lifecycle of product development from the opportunity / tendering phase through to planning, development, testing, close-out, and continuous improvement.',
+      link: 'google.ca',
+    },
+  ];
+
   return (
     <div className="grid gap-6 duration-500 animate-in fade-in">
       <Card>
         <CardHeader>
-          <CardTitle>Governance</CardTitle>
+          <CardTitle className="mb-2 text-2xl font-bold">
+            Governance & Procedures
+          </CardTitle>
+          <CardDescription>The following documents describe</CardDescription>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-4 text-sm">
-            <li>
-              <div className="font-medium">Policies and Procedures</div>
-              <div className="text-muted-foreground">
-                Formal guidelines and rules that govern the organization's
-                operations, decision-making, and employee conduct.
-              </div>
-            </li>
-            <li>
-              <div className="font-medium">Roles and Responsibilities</div>
-              <div className="text-muted-foreground">
-                Clear definitions of the duties, authority, and accountability
-                for each position or function within the organization.
-              </div>
-            </li>
-            <li>
-              <div className="font-medium">Approval Workflows</div>
-              <div className="text-muted-foreground">
-                Documented processes for obtaining the necessary approvals and
-                sign-offs for various business activities or decisions.
-              </div>
-            </li>
-            <li>
-              <div className="font-medium">Compliance and Auditing</div>
-              <div className="text-muted-foreground">
-                Measures to ensure adherence to internal policies, external
-                regulations, and industry standards, including regular audits
-                and reviews.
-              </div>
-            </li>
-            <li>
-              <div className="font-medium">Risk Management</div>
-              <div className="text-muted-foreground">
-                Processes for identifying, assessing, and mitigating potential
-                risks to the organization's operations, assets, and reputation.
-              </div>
-            </li>
-          </ul>
+          <div className="container mx-auto">
+            <Accordion
+              type="multiple"
+              // collapsible
+              className="w-full"
+            >
+              {mockProcedures.map((procedure, index) => (
+                <AccordionItem
+                  key={index}
+                  value={`item-${index}`}
+                  className="mb-2"
+                >
+                  <AccordionTrigger className="text-md rounded-t-lg bg-secondary px-4 font-semibold">
+                    {procedure.docNumber + ' - ' + procedure.title}
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4">
+                    <CategoryItem
+                      category="Title:"
+                      value={procedure.title}
+                    />
+                    <CategoryItem
+                      category="Revision:"
+                      value={procedure.revision}
+                    />
+                    <CategoryItem
+                      category="Origin:"
+                      value={
+                        <InlineLinkCopy
+                          displayText={procedure.originator}
+                          href={procedure.link}
+                        />
+                      }
+                    />
+                    <CategoryItem
+                      category="Summary:"
+                      value={procedure.description}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </CardContent>
       </Card>
     </div>

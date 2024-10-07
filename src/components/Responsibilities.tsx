@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 export default function Responsibilities() {
   return (
     <div className="grid gap-6 duration-500 animate-in fade-in">
-      <Card>
+      <Card className="border">
         <CardHeader>
           <CardTitle>Job Responsibilities</CardTitle>
         </CardHeader>
